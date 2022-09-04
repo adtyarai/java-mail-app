@@ -19,11 +19,6 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @RequestMapping(value = "/welcome", method = RequestMethod.GET)
-    public String getWelcomeMessage() {
-        return "Welcome";
-    }
-
     @RequestMapping(value = "/send-mail", method = RequestMethod.POST)
     public ResponseEntity<?> sendMail (@RequestBody EmailModel requests) {
         boolean isSent = emailService.sendMessage(requests.getMessage(), requests.getSubject(), requests.getTo());

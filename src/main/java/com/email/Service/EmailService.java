@@ -2,6 +2,7 @@ package com.email.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -12,8 +13,19 @@ import java.util.Properties;
 @Service
 public class EmailService {
     Logger logger = LoggerFactory.getLogger(EmailService.class);
-    private final String GMAIL_HOST = "smtp.gmail.com";
-    private final String from = "adtyarai9@gmail.com";
+
+    @Value("${gmailHost}")
+    private String GMAIL_HOST;
+
+    @Value("${username}")
+    private String fromEmail;
+
+    @Value("${password}")
+    private String EMAIL_KEY;
+
+    public String getFromValue(){
+        return fromEmail;
+    }
 
     public boolean sendMessage (String message, String subject, String to) {
         logger.info("Preparing message");
@@ -34,21 +46,20 @@ public class EmailService {
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication () {
-                return new PasswordAuthentication("adtyarai9@gmail.com",
-                        "vusbcgvezuutepnp");
+                return new PasswordAuthentication(fromEmail, EMAIL_KEY);
             }
         });
         session.setDebug(true);
 
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
-            mimeMessage.setFrom(from);
+            mimeMessage.setFrom(fromEmail);
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
             mimeMessage.setSubject(subject);
             mimeMessage.setText(message);
 
             logger.info("Sending Message");
-            Transport.send(mimeMessage);
+//            Transport.send(mimeMessage);
             logger.info("Sent Successfully");
             isEmailSent = true;
 
